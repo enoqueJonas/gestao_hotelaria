@@ -85,4 +85,101 @@ class SQLHelper {
       debugPrint("Não foi possível apagar o cliente! $err");
     }
   }
+
+  static Future<int> createTicket(String description) async {
+    final db = await SQLHelper.db();
+
+    final data = {'description': description};
+    final id = await db.insert('tickets', data,
+        conflictAlgorithm: sql.ConflictAlgorithm.replace);
+    return id;
+  }
+
+  static Future<List<Map<String, dynamic>>> getTickets() async {
+    final db = await SQLHelper.db();
+    return db.query('tickets', orderBy: 'id');
+  }
+
+  static Future<List<Map<String, dynamic>>> getTicket(int id) async {
+    final db = await SQLHelper.db();
+    return db.query('tickets', where: "id = ?", whereArgs: [id], limit: 1);
+  }
+
+  static Future<int> updateTicket(int id, String description) async {
+    final db = await SQLHelper.db();
+
+    final data = {
+      'description': description,
+      'createdAt': DateTime.now().toString()
+    };
+
+    final result =
+        await db.update('tickets', data, where: "id = ?", whereArgs: [id]);
+
+    return result;
+  }
+
+  static Future<void> deleteTicket(int id) async {
+    final db = await SQLHelper.db();
+
+    try {
+      await db.delete('tickets', where: "id = ?", whereArgs: [id]);
+    } catch (err) {
+      debugPrint("Não foi possível apagar o bilhete! $err");
+    }
+  }
+
+  // CRUD methods for sales table
+
+  static Future<int> createSale(int idClient, int idTicket) async {
+    final db = await SQLHelper.db();
+
+    final data = {'id_client': idClient, 'id_ticket': idTicket};
+    final id = await db.insert('sales', data,
+        conflictAlgorithm: sql.ConflictAlgorithm.replace);
+    return id;
+  }
+
+  static Future<List<Map<String, dynamic>>> getSales() async {
+    final db = await SQLHelper.db();
+    return db.query('sales', orderBy: 'createdAt');
+  }
+
+  static Future<List<Map<String, dynamic>>> getSale(
+      int idClient, int idTicket) async {
+    final db = await SQLHelper.db();
+    return db.query('sales',
+        where: "id_client = ? AND id_ticket = ?",
+        whereArgs: [idClient, idTicket],
+        limit: 1);
+  }
+
+  static Future<int> updateSale(
+      int idClient, int idTicket, int newIdClient, int newIdTicket) async {
+    final db = await SQLHelper.db();
+
+    final data = {
+      'id_client': newIdClient,
+      'id_ticket': newIdTicket,
+      'createdAt': DateTime.now().toString()
+    };
+
+    final result = await db.update('sales', data,
+        where: "id_client = ? AND id_ticket = ?",
+        whereArgs: [idClient, idTicket]);
+
+    return result;
+  }
+
+  static Future<void> deleteSale(int idClient, int idTicket) async {
+    final db = await SQLHelper.db();
+
+    try {
+      await db.delete('sales',
+          where: "id_client = ? AND id_ticket = ?",
+          whereArgs: [idClient, idTicket]);
+    } catch (err) {
+      debugPrint("Não foi possível apagar a venda! $err");
+    }
+  }
 }

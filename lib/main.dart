@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gestao_hotelaria/sql_helper.dart';
+import 'package:gestao_hotelaria/tickets_page.dart';
+import 'package:gestao_hotelaria/sales_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +19,11 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'Hotelaria'),
+      routes: {
+        '/clients': (context) => const MyHomePage(title: 'Clientes'),
+        '/tickets': (context) => const TicketsPage(),
+        '/sales': (context) => const SalesPage(),
+      },
     );
   }
 }
@@ -141,6 +148,33 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
+        ),
+        drawer: Drawer(
+          child: ListView(
+            children: [
+              ListTile(
+                title: const Text('Clientes'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushNamed('/clients');
+                },
+              ),
+              ListTile(
+                title: const Text('Bilhetes'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushNamed('/tickets');
+                },
+              ),
+              ListTile(
+                title: const Text('Vendas'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushNamed('/sales');
+                },
+              ),
+            ],
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),

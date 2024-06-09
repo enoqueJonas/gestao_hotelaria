@@ -17,6 +17,7 @@ class SQLHelper {
       CREATE TABLE tickets (
         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
         description TEXT,
+        price REAL,
         createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
       );
     """);
@@ -34,7 +35,7 @@ class SQLHelper {
 
   static Future<sql.Database> db() async {
     return sql.openDatabase(
-      join(await sql.getDatabasesPath(), 'ticketManagement2.db'),
+      join(await sql.getDatabasesPath(), 'ticketManagement3.db'),
       version: 1,
       onCreate: (sql.Database database, int version) async {
         await createTables(database);
@@ -86,10 +87,10 @@ class SQLHelper {
     }
   }
 
-  static Future<int> createTicket(String description) async {
+  static Future<int> createTicket(String description, double price) async {
     final db = await SQLHelper.db();
 
-    final data = {'description': description};
+    final data = {'description': description, 'price': price};
     final id = await db.insert('tickets', data,
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
     return id;
@@ -105,7 +106,8 @@ class SQLHelper {
     return db.query('tickets', where: "id = ?", whereArgs: [id], limit: 1);
   }
 
-  static Future<int> updateTicket(int id, String description) async {
+  static Future<int> updateTicket(
+      int id, String description, double price) async {
     final db = await SQLHelper.db();
 
     final data = {
@@ -128,8 +130,6 @@ class SQLHelper {
       debugPrint("Não foi possível apagar o bilhete! $err");
     }
   }
-
-  // CRUD methods for sales table
 
   static Future<int> createSale(int idClient, int idTicket) async {
     final db = await SQLHelper.db();
